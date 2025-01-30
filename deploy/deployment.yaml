@@ -15,15 +15,22 @@ spec:
         app: deepface-cobli
     spec:
       containers:
-        - image: 'serengil/deepface'
+        - image: 911383825788.dkr.ecr.us-east-1.amazonaws.com/cobli-internal/deepface:d0e082bc570551529d3aa78543eef11ca933c862
           ports:
           - containerPort: 5000
           name: deepface-cobli
           resources:
             requests:
-              memory: 5G
-              cpu: 500m
+              cpu: 3500m
+              memory: 27Gi
+              nvidia.com/gpu: 1
             limits:
-              memory: 5G
-              cpu: 1500m
+              cpu: 3500m
+              memory: 27Gi
+              nvidia.com/gpu: 1
+      tolerations:
+        - key: cobli.co/workload
+          operator: "Equal"
+          value: gpgpu
+          effect: "NoSchedule"
       restartPolicy: Always
