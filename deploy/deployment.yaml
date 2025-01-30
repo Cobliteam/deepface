@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: deepface-cobli
+  name: deepface-cobli
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deepface-cobli
+  template:
+    metadata:
+      labels:
+        app: deepface-cobli
+    spec:
+      containers:
+        - image: 'serengil/deepface'
+          ports:
+          - containerPort: 5000
+          name: deepface-cobli
+          resources:
+            requests:
+              memory: 5G
+              cpu: 500m
+            limits:
+              memory: 5G
+              cpu: 1500m
+      restartPolicy: Always

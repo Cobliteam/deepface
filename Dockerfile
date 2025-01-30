@@ -1,5 +1,5 @@
 # base image
-FROM python:3.8.12
+FROM nvcr.io/nvidia/cuda:12.8.0-runtime-ubuntu20.04
 LABEL org.opencontainers.image.source https://github.com/serengil/deepface
 
 # -----------------------------------
@@ -7,11 +7,19 @@ LABEL org.opencontainers.image.source https://github.com/serengil/deepface
 RUN mkdir -p /app && chown -R 1001:0 /app
 RUN mkdir /app/deepface
 
-
-
 # -----------------------------------
 # switch to application directory
 WORKDIR /app
+
+# install python
+RUN apt update -y && apt upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive  apt-get install -y wget build-essential checkinstall  libreadline-gplv2-dev  libncursesw5-dev  libssl-dev  libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev && \
+    cd /usr/src && \
+    wget https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz && \
+    tar xzf Python-3.8.12.tgz && \
+    cd Python-3.8.12 && \
+    ./configure --enable-optimizations && \
+    make altinstall
 
 # -----------------------------------
 # update image os
@@ -21,6 +29,7 @@ RUN apt-get update && apt-get install -y \
     libsm6 \
     libxext6 \
     libhdf5-dev \
+    python-is-python3 \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------
@@ -36,24 +45,24 @@ COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
 # if you plan to use a GPU, you should install the 'tensorflow-gpu' package
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow-gpu
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow
 
 # if you plan to use face anti-spoofing, then activate this line
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org torch==2.1.2
+# RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org torch==2.1.2
 # -----------------------------------
 # install deepface from pypi release (might be out-of-date)
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org deepface
+# RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org deepface
 # -----------------------------------
 # install dependencies - deepface with these dependency versions is working
-RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements_local.txt
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -r /app/requirements_local.txt
 # install deepface from source code (always up-to-date)
-RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -e .
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org -e .
 
 # -----------------------------------
 # some packages are optional in deepface. activate if your task depends on one.
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org cmake==3.24.1.1
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org dlib==19.20.0
-# RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org lightgbm==2.3.1
+# RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org cmake==3.24.1.1
+# RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org dlib==19.20.0
+# RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org lightgbm==2.3.1
 
 # -----------------------------------
 # environment variables
