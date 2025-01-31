@@ -15,10 +15,11 @@ spec:
         app: deepface-cobli
     spec:
       containers:
-        - image: 911383825788.dkr.ecr.us-east-1.amazonaws.com/cobli-internal/deepface:d0e082bc570551529d3aa78543eef11ca933c862
+        - image: 911383825788.dkr.ecr.us-east-1.amazonaws.com/cobli-internal/deepface:6
           ports:
           - containerPort: 5000
           name: deepface-cobli
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: 3500m
