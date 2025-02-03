@@ -1,5 +1,5 @@
 # base image
-FROM nvcr.io/nvidia/cuda:12.8.0-runtime-ubuntu20.04
+FROM nvcr.io/nvidia/cuda:11.0.3-runtime-ubuntu20.04
 LABEL org.opencontainers.image.source https://github.com/serengil/deepface
 
 # -----------------------------------
@@ -32,6 +32,14 @@ RUN apt-get update && apt-get install -y \
     python-is-python3 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && \
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub && \
+    echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /"  > /etc/apt/sources.list.d/tensorRT.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends libnvinfer7=7.2.2-1+cuda11.0 \
+    libnvinfer-plugin7=7.2.2-1+cuda11.0 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 # -----------------------------------
 # Copy required files from repo into image
 COPY ./deepface /app/deepface
@@ -45,7 +53,7 @@ COPY ./entrypoint.sh /app/deepface/api/src/entrypoint.sh
 
 # -----------------------------------
 # if you plan to use a GPU, you should install the 'tensorflow-gpu' package
-RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org tensorflow-gpu==2.11.0
 
 # if you plan to use face anti-spoofing, then activate this line
 # RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org torch==2.1.2
@@ -60,13 +68,14 @@ RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trus
 
 # -----------------------------------
 # some packages are optional in deepface. activate if your task depends on one.
-# RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org cmake==3.24.1.1
-# RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org dlib==19.20.0
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org cmake==3.24.1.1
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org dlib==19.20.0
 # RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org lightgbm==2.3.1
 
 # -----------------------------------
 # environment variables
 ENV PYTHONUNBUFFERED=1
+ENV LD_LIBRARY_PATH=usr/local/cuda-11.0/lib64
 
 # -----------------------------------
 # run the app (re-configure port if necessary)
