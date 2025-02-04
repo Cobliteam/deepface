@@ -70,6 +70,9 @@ RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trus
 # some packages are optional in deepface. activate if your task depends on one.
 RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org cmake==3.24.1.1
 RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org dlib==19.20.0
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org facenet-pytorch==2.5.3
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org mediapipe==0.10.11
+RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org ultralytics==8.3.70
 # RUN pip3.8 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host=files.pythonhosted.org lightgbm==2.3.1
 
 # -----------------------------------
