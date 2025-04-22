@@ -42,6 +42,7 @@ WEIGHTS_URL = (
     "https://github.com/serengil/deepface_models/releases/download/v1.0/vgg_face_weights.h5"
 )
 
+
 # pylint: disable=too-few-public-methods
 class VggFaceClient(FacialRecognition):
     """
@@ -57,8 +58,7 @@ class VggFaceClient(FacialRecognition):
     def forward(self, img: np.ndarray) -> List[float]:
         """
         Generates embeddings using the VGG-Face model.
-            This method incorporates an additional normalization layer,
-            necessitating the override of the forward method.
+            This method incorporates an additional normalization layer.
 
         Args:
             img (np.ndarray): pre-loaded image in BGR
@@ -70,8 +70,11 @@ class VggFaceClient(FacialRecognition):
 
         # having normalization layer in descriptor troubles for some gpu users (e.g. issue 957, 966)
         # instead we are now calculating it with traditional way not with keras backend
-        embedding = self.model(img, training=False).numpy()[0].tolist()
-        embedding = verification.l2_normalize(embedding)
+        embedding = super().forward(img)
+        if isinstance(embedding, list) and len(embedding) > 0 and isinstance(embedding[0], list):
+            embedding = verification.l2_normalize(embedding, axis=1)
+        else:
+            embedding = verification.l2_normalize(embedding)
         return embedding.tolist()
 
 
@@ -158,6 +161,6 @@ def load_model(
     # base_model_output = Lambda(lambda x: K.l2_normalize(x, axis=1), name="norm_layer")(
     #     base_model_output
     # )
-    vgg_face_descriptor = Model(inputs=model.input, outputs=base_model_output)
+    vgg_face_descriptor = Model(inputs=model.layers[0].input, outputs=base_model_output)
 
     return vgg_face_descriptor

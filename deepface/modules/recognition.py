@@ -48,7 +48,7 @@ def find(
             OpenFace, DeepFace, DeepID, Dlib, ArcFace, SFace and GhostFaceNet (default is VGG-Face).
 
         distance_metric (string): Metric for measuring similarity. Options: 'cosine',
-            'euclidean', 'euclidean_l2'.
+            'euclidean', 'euclidean_l2', 'angular'.
 
         enforce_detection (boolean): If no face is detected in an image, raise an exception.
             Default is True. Set to False to avoid the exception for low-resolution images.
@@ -398,6 +398,7 @@ def __find_bulk_embeddings(
                 enforce_detection=enforce_detection,
                 align=align,
                 expand_percentage=expand_percentage,
+                color_face='bgr'  # `represent` expects images in bgr format.
             )
 
         except ValueError as err:
@@ -480,7 +481,7 @@ def find_batched(
             OpenFace, DeepFace, DeepID, Dlib, ArcFace, SFace and GhostFaceNet (default is VGG-Face).
 
         distance_metric (string): Metric for measuring similarity. Options: 'cosine',
-            'euclidean', 'euclidean_l2'.
+            'euclidean', 'euclidean_l2', 'angular'.
 
         enforce_detection (boolean): If no face is detected in an image, raise an exception.
             Default is True. Set to False to avoid the exception for low-resolution images.
