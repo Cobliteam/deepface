@@ -1,0 +1,51 @@
+applicationName: &applicationName deepface
+namespace: &namespace coblicam
+appImageVersion: 1.0.0
+
+repository: 911383825788.dkr.ecr.us-east-1.amazonaws.com/cobli-internal
+pullPolicy: IfNotPresent
+appImageName: *applicationName
+name: *applicationName
+port: 5000
+
+replicas: 1
+minReplicas: 1
+maxReplicas: 6
+
+appCpuRequest: 1000m
+appCpuLimit: 2000m
+appMemoryRequest: 1500Mi
+appMemoryLimit: 3000Mi
+averageCpuUtilizationTarget: 70
+
+appStartupProbePath: /
+appLivenessProbePath: /
+appReadinessProbePath: /
+appLivenessProbeFailureThreshold: 6
+appLivenessProbePeriodSeconds: 10
+appLivenessProbeInitialDelay: 30
+appReadinessProbeInitialDelay: 15
+appStartupProbeFailureThreshold: 30
+appStartupProbePeriodSeconds: 10
+appLivenessProbeTimeoutSeconds: 5
+appReadinessProbeTimeoutSeconds: 5
+appReadinessProbeFailureThreshold: 1
+appReadinessProbePeriodSeconds: 10
+
+uwsgi:
+  processes: 1
+  threads: 8
+  harakiri: 120
+datadog:
+  trace:
+    enabled: true
+  profiling:
+    enabled: false
+
+customLabels:
+  finops.org/product: video-telemetria
+  finops.org/feature: reconhecimento-facial
+  finops.org/service: deepface
+  finops.org/component: *applicationName
+  finops.org/environment: production
+  finops.org/expenses-nature: cogs
