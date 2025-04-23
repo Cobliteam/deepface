@@ -1,0 +1,21 @@
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name: deepface-mapping
+  namespace: coblicam
+  labels:
+    tags.datadoghq.com/service: {{ .Values.applicationName }}
+    tags.datadoghq.com/version: {{ .Values.appImageVersion }}
+    finops.org/environment: production
+    finops.org/expenses-nature: cogs
+    finops.org/product: video-telemetria
+    finops.org/feature: reconhecimento-facial
+    finops.org/service: {{ .Values.applicationName }}
+spec:
+  ambassador_id:
+    - api-gateway
+  hostname: api.cobli.co
+  prefix: /deepface
+  rewrite: /
+  service: deepface.coblicam:5000
+  timeout_ms: 65000

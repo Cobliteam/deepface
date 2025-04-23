@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.applicationName }}
+    {{- include "labels" . | nindent 4 }}
+  name: {{ .Values.name }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.applicationName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.applicationName }}
+        {{- include "labels" . | nindent 8 }}
+    spec:
+      containers:
+        - env:
+            - name: INTEL_OPTIMIZATION
+              value: "true"
+            - name: ML_PORT
+              value: "{{ .Values.port }}"
+            - name: UWSGI_PROCESSES
+              value: "{{ .Values.uwsgi.processes }}"
+            - name: UWSGI_THREADS
+              value: "{{ .Values.uwsgi.threads }}"
+            - name: UWSGI_HARAKIRI
+              value: "{{ .Values.uwsgi.harakiri }}"
+            - name: COBLERNETES_HOST_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.hostIP
+            - name: DD_SERVICE
+              value: {{ .Values.name }}
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/version']
+            - name: FLASK_ENV
+              value: production
+            - name: LOGGING_LEVEL_NAME
+              value: WARNING
+            - name: DD_AGENT_HOST
+              value: $(COBLERNETES_HOST_IP)
+            - name: DD_TRACE_ENABLED
+              value: {{ .Values.datadog.trace.enabled | toString | lower | quote }}
+            - name: DD_PROFILING_ENABLED
+              value: {{ .Values.datadog.profiling.enabled | toString | lower | quote }}
+            - name: DD_PROFILING_ALLOCATION_ENABLED
+              value: {{ .Values.datadog.profiling.enabled | toString | lower | quote }}
+            - name: DD_SERVICE_MAPPING
+              value: cassandra:{{ .Values.applicationName }}-core-cassandra,kafka:{{ .Values.applicationName }}-core-kafka,redis:{{ .Values.applicationName }}-core-redis,postgresql:{{ .Values.applicationName }}-core-postgresql
+          image: '{{ .Values.repository }}/{{ .Values.appImageName }}:{{ .Values.appImageVersion }}'
+          ports:
+          - containerPort: {{ .Values.port }}
+          name: {{ .Values.name }}
+          resources:
+            requests:
+              memory: {{ .Values.appMemoryRequest }}
+              cpu: {{ .Values.appCpuRequest }}
+            limits:
+              memory: {{ .Values.appMemoryLimit }}
+              cpu: {{ .Values.appCpuLimit }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.appStartupProbePath }}
+              port: {{ .Values.port }}
+            failureThreshold: {{ .Values.appStartupProbeFailureThreshold }}
+            periodSeconds: {{ .Values.appStartupProbePeriodSeconds }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.appReadinessProbePath }}
+              port: {{ .Values.port }}
+            {{- if gt .Values.appReadinessProbeInitialDelay 0.0 }}
+            initialDelaySeconds: {{ .Values.appReadinessProbeInitialDelay }}
+            {{- end }}
+            failureThreshold: {{ .Values.appReadinessProbeFailureThreshold }}
+            periodSeconds: {{ .Values.appReadinessProbePeriodSeconds }}
+            {{- if .Values.appReadinessProbeTimeoutSeconds }}
+            timeoutSeconds: {{ .Values.appReadinessProbeTimeoutSeconds }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.appLivenessProbePath }}
+              port: {{ .Values.port }}
+            {{- if gt .Values.appLivenessProbeInitialDelay 0.0 }}
+            initialDelaySeconds: {{ .Values.appLivenessProbeInitialDelay }}
+            {{- end }}
+            failureThreshold: {{ .Values.appLivenessProbeFailureThreshold }}
+            periodSeconds: {{ .Values.appLivenessProbePeriodSeconds }}
+            {{- if .Values.appLivenessProbeTimeoutSeconds }}
+            timeoutSeconds: {{ .Values.appLivenessProbeTimeoutSeconds }}
+            {{- end }}
+      restartPolicy: Always
