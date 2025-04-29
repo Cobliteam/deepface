@@ -43,6 +43,8 @@ spec:
               value: production
             - name: LOGGING_LEVEL_NAME
               value: WARNING
+            - name: DEEPFACE_LOG_LEVEL
+              value: {{ .Values.logLevel}}
             - name: DD_AGENT_HOST
               value: $(COBLERNETES_HOST_IP)
             - name: DD_TRACE_ENABLED
