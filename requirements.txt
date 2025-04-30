@@ -13,4 +13,10 @@ mtcnn>=0.1.0
 retina-face>=0.0.14
 fire>=0.4.0
 gunicorn>=20.1.0
-ultralytics>=8.0.122
+
+## Ultralytics deps
+matplotlib>=3.2.2
+psutil
+PyYAML>=5.3.1
+scipy>=1.4.1
+seaborn>=0.11.0

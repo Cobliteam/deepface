@@ -1,6 +1,6 @@
 applicationName: &applicationName deepface
 namespace: &namespace coblicam
-appImageVersion: 1.0.2
+appImageVersion: 1.0.3
 
 repository: 911383825788.dkr.ecr.us-east-1.amazonaws.com/cobli-internal
 pullPolicy: IfNotPresent
@@ -8,8 +8,8 @@ appImageName: *applicationName
 name: *applicationName
 port: 5000
 
-replicas: 1
-minReplicas: 1
+replicas: 3
+minReplicas: 2
 maxReplicas: 6
 
 appCpuRequest: 1000m
