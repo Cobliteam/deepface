@@ -9,13 +9,13 @@ name: *applicationName
 port: 5000
 
 replicas: 3
-minReplicas: 2
+minReplicas: 1
 maxReplicas: 6
 
 appCpuRequest: 1000m
 appCpuLimit: 2000m
-appMemoryRequest: 1500Mi
-appMemoryLimit: 3000Mi
+appMemoryRequest: 3000Mi
+appMemoryLimit: 4500Mi
 averageCpuUtilizationTarget: 70
 
 appStartupProbePath: /
