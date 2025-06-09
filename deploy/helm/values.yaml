@@ -10,13 +10,13 @@ port: 5000
 
 replicas: 3
 minReplicas: 1
-maxReplicas: 6
+maxReplicas: 8
 
-appCpuRequest: 1000m
-appCpuLimit: 2000m
-appMemoryRequest: 3000Mi
-appMemoryLimit: 4500Mi
-averageCpuUtilizationTarget: 70
+appCpuRequest: 2500m
+appCpuLimit: 3000m
+appMemoryRequest: 4000Mi
+appMemoryLimit: 5000Mi
+averageCpuUtilizationTarget: 90
 
 appStartupProbePath: /
 appLivenessProbePath: /
